@@ -51,14 +51,50 @@ class Meta:
 
     @post_load
     def create_song(self, data, **kwargs):
-        return Product(**data)
+        return Song(**data)
 
 song_schema = SongSchema()
 songs_schema = SongSchema(many = True)
 
 # Resources
 
-
-
+class SongListResource(Resource):
+    def get(self):
+        all_songs = Song.query.all()
+        return songs_schema.dum(all_songs)
+    def post(self):
+        form_data = request.get_json()
+        try:
+            new_song = song_schema.load(form_data)
+            db.session.add(new_song)
+            db.session.commit()
+            return song_schema.dump(new_song), 201
+        except ValidationError as err:
+            return err.messages, 400
+class SongResource(Resource):
+    def get(self, pk):
+        song_from_db = Song.query.get_or_404(pk)
+        return song_schema.dump(song_from_db), 200
+    def delete(self, pk):
+        song_from_db = Song.query.get_or_404(pk)
+        db.session.delete(song_from_db)
+        return '', 204
+    def put(self,pk):
+        song_from_db = Song.query.get_or_404(pk)
+        if 'title' in request.json:
+            song_from_db = request.json('title')
+        if 'artist' in request.json:
+            song_from_db = request.json('artist')
+        if 'album' in request.json:
+            song_from_db = request.json('album')
+        if 'release_date' in request.json:
+            song_from_db = request.json('release_date')
+        if 'genre' in request.json:
+            song_from_db = request.json('genre')
+        db.session.commit()
+        return song_schema.dum(song_from_db), 200
 
 # Routes
+
+api.add_resource(SongListResource), '/api/songs'
+api.add_resource(SongResource), 'api/songs/<int:pk>'
