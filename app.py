@@ -46,8 +46,8 @@ class SongSchema(ma.Schema):
     release_date = fields.Date(required = True)
     genre = fields.String(required = True)
 
-class Meta:
-    fields = ("id", "title", "artist", "album", "release_date", "genre")
+    class Meta:
+        fields = ("id", "title", "artist", "album", "release_date", "genre")
 
     @post_load
     def create_song(self, data, **kwargs):
@@ -78,19 +78,20 @@ class SongResource(Resource):
     def delete(self, pk):
         song_from_db = Song.query.get_or_404(pk)
         db.session.delete(song_from_db)
+        db.session.commit()
         return '', 204
     def put(self,pk):
         song_from_db = Song.query.get_or_404(pk)
         if 'title' in request.json:
-            song_from_db = request.json('title')
+            song_from_db.title = request.json['title']
         if 'artist' in request.json:
-            song_from_db = request.json('artist')
+            song_from_db.artist = request.json['artist']
         if 'album' in request.json:
-            song_from_db = request.json('album')
+            song_from_db.album = request.json['album']
         if 'release_date' in request.json:
-            song_from_db = request.json('release_date')
+            song_from_db.release_date = request.json['release_date']
         if 'genre' in request.json:
-            song_from_db = request.json('genre')
+            song_from_db.genre = request.json['genre']
         db.session.commit()
         return song_schema.dump(song_from_db), 200
 
