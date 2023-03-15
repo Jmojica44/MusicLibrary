@@ -61,7 +61,7 @@ songs_schema = SongSchema(many = True)
 class SongListResource(Resource):
     def get(self):
         all_songs = Song.query.all()
-        return songs_schema.dum(all_songs)
+        return songs_schema.dump(all_songs)
     def post(self):
         form_data = request.get_json()
         try:
@@ -92,9 +92,9 @@ class SongResource(Resource):
         if 'genre' in request.json:
             song_from_db = request.json('genre')
         db.session.commit()
-        return song_schema.dum(song_from_db), 200
+        return song_schema.dump(song_from_db), 200
 
 # Routes
 
-api.add_resource(SongListResource), '/api/songs'
-api.add_resource(SongResource), 'api/songs/<int:pk>'
+api.add_resource(SongListResource, '/api/songs/')
+api.add_resource(SongResource, '/api/songs/<int:pk>/')
