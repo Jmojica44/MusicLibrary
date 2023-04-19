@@ -30,7 +30,7 @@ class Song(db.Model):
     title = db.Column(db.String(255), nullable = False)
     artist = db.Column(db.String(255), nullable = False)
     album = db.Column(db.String(255), nullable = False)
-    release_date = db.Column(db.Date, nullable = False)
+    release_date = db.Column(db.Date)
     genre = db.Column(db.String(255), nullable = False)
 
     def __repr__(self):
